@@ -708,9 +708,15 @@ class NetworkState:
             return {"source": source, "target": target, "paths": [], "optimal": None}
 
         ranked: List[Dict] = []
-        for i, path in enumerate(paths_gen):
-            if i >= k:
-                break
+        try:
+            all_paths = []
+            for i, path in enumerate(paths_gen):
+                if i >= k:
+                    break
+                all_paths.append(path)
+        except nx.NetworkXNoPath:
+            return {"source": source, "target": target, "paths": [], "optimal": None}
+        for i, path in enumerate(all_paths):
             edges = list(zip(path[:-1], path[1:]))
             total_latency = sum(self.graph[u][v]["latency"] for u, v in edges)
             avg_traffic = round(sum(self.graph[u][v]["traffic"] for u, v in edges) / max(1, len(edges)), 1)
@@ -959,14 +965,13 @@ ALLOWED_LOCAL_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "https://YOUR-VERCEL-URL.vercel.app"
+    "http://127.0.0.1:5173"
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_LOCAL_ORIGINS,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
