@@ -14,7 +14,8 @@ import "leaflet/dist/leaflet.css";
 import "./App.css";
 import axios from "axios";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8001";
+const RAW_BACKEND = import.meta.env.VITE_BACKEND_URL || "http://localhost:8001";
+const BACKEND_URL = RAW_BACKEND.startsWith("http") ? RAW_BACKEND : `https://${RAW_BACKEND}`;
 const API = `${BACKEND_URL}/api`;
 const WS_URL = `${BACKEND_URL.replace(/^http/, "ws")}/api/ws/stream`;
 const nodeIcon = (label, kind = "node") =>
@@ -300,9 +301,8 @@ export default function App() {
             className="pp-tile-imagery"
           />
           <TileLayer
-            attribution='Labels &copy; CARTO'
-            url="https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
-            subdomains="abcd"
+            attribution='Labels &copy; Esri'
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
             className="pp-tile-labels"
           />
           
